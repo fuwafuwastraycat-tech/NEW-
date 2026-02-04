@@ -13,10 +13,10 @@
       }
       body {
         margin: 0;
-        padding: 40px 24px;
+        padding: 32px 20px 48px;
       }
       .container {
-        max-width: 960px;
+        max-width: 1080px;
         margin: 0 auto;
       }
       header {
@@ -40,6 +40,16 @@
         display: grid;
         gap: 16px;
       }
+      .section-title {
+        font-size: 18px;
+        margin: 16px 0 4px;
+        color: #111827;
+      }
+      .section-description {
+        margin: 0 0 8px;
+        color: #6b7280;
+        font-size: 14px;
+      }
       .field {
         display: grid;
         gap: 8px;
@@ -47,22 +57,54 @@
       label {
         font-weight: 600;
       }
+      .helper {
+        font-size: 12px;
+        color: #6b7280;
+      }
       input,
-      textarea {
+      textarea,
+      select {
         font: inherit;
         padding: 10px 12px;
         border-radius: 10px;
         border: 1px solid #d2d6dc;
         background: #fff;
       }
+      input[type="file"] {
+        padding: 6px 10px;
+        background: #f9fafb;
+      }
       textarea {
         min-height: 120px;
         resize: vertical;
+      }
+      .admin-only[disabled] {
+        background: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
       }
       .grid-2 {
         display: grid;
         gap: 16px;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+      .grid-3 {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+      .role-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+      }
+      .role-toggle label {
+        font-weight: 600;
       }
       .actions {
         display: flex;
@@ -104,7 +146,7 @@
         margin: 0;
         display: grid;
         gap: 6px 16px;
-        grid-template-columns: 120px 1fr;
+        grid-template-columns: 160px 1fr;
       }
       .entry dt {
         font-weight: 600;
@@ -121,42 +163,217 @@
         border: 1px dashed #cbd5f5;
         border-radius: 12px;
       }
+      @media (max-width: 640px) {
+        body {
+          padding: 20px 14px 40px;
+        }
+        .card {
+          padding: 18px;
+        }
+        .entry dl {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
         <h1>日報入力アプリ</h1>
-        <p>日付、場所、名前、新規台数、所感、課題を入力して記録できます。</p>
+        <p>スマホ入力向けに、スクショの内容と同じ項目で日報を記録できます。</p>
       </header>
 
       <section class="card">
         <form id="report-form">
+          <div class="role-toggle">
+            <div>
+              <label for="admin-mode">管理者として入力する</label>
+              <p class="helper">管理者コメントと確認フラグは管理者モードのみ編集可能です。</p>
+            </div>
+            <input id="admin-mode" name="adminMode" type="checkbox" />
+          </div>
+
+          <h2 class="section-title">基本情報</h2>
+          <p class="section-description">スクショの基本項目を入力してください。</p>
           <div class="grid-2">
             <div class="field">
               <label for="date">日付</label>
               <input id="date" name="date" type="date" required />
             </div>
             <div class="field">
-              <label for="location">場所</label>
-              <input id="location" name="location" type="text" placeholder="例: 東京支店" required />
+              <label for="email">メールアドレス</label>
+              <input id="email" name="email" type="email" placeholder="例: user@example.com" required />
             </div>
             <div class="field">
-              <label for="name">名前</label>
-              <input id="name" name="name" type="text" placeholder="例: 山田 太郎" required />
+              <label for="staff-name">担当者名</label>
+              <input id="staff-name" name="staffName" type="text" placeholder="例: 山田 太郎" required />
             </div>
             <div class="field">
-              <label for="new-units">新規台数</label>
-              <input id="new-units" name="newUnits" type="number" min="0" step="1" value="0" required />
+              <label for="store">実施店舗</label>
+              <input id="store" name="store" type="text" placeholder="例: 新宿店" required />
+            </div>
+            <div class="field">
+              <label for="event-location">催事場所</label>
+              <input id="event-location" name="eventLocation" type="text" placeholder="例: 入口特設ブース" required />
+            </div>
+            <div class="field">
+              <label for="photo">催事場の写真を添付</label>
+              <input id="photo" name="photo" type="file" accept="image/*" />
+              <span class="helper">端末内の写真を選択してください（保存時はファイル名のみ記録）。</span>
             </div>
           </div>
+
+          <h2 class="section-title">実績（件数）</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="catch-count">キャッチ数（反応した数）</label>
+              <input id="catch-count" name="catchCount" type="number" min="0" step="1" inputmode="numeric" value="0" required />
+            </div>
+            <div class="field">
+              <label for="seat-count">着座数</label>
+              <input id="seat-count" name="seatCount" type="number" min="0" step="1" inputmode="numeric" value="0" required />
+            </div>
+            <div class="field">
+              <label for="estimate-count">見積を渡せた見込みの数</label>
+              <input id="estimate-count" name="estimateCount" type="number" min="0" step="1" inputmode="numeric" value="0" required />
+            </div>
+          </div>
+
+          <h2 class="section-title">携帯（au/UQ）</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="au-mnp-sim">auMNP SIM単</label>
+              <input id="au-mnp-sim" name="auMnpSim" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="au-mnp-device">auMNP 端末付き</label>
+              <input id="au-mnp-device" name="auMnpDevice" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="au-new-sim">au純新規 SIM単</label>
+              <input id="au-new-sim" name="auNewSim" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="au-new-device">au純新規 端末付き</label>
+              <input id="au-new-device" name="auNewDevice" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="uq-mnp-sim">UQMNP SIM単</label>
+              <input id="uq-mnp-sim" name="uqMnpSim" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="uq-mnp-device">UQMNP 端末付き</label>
+              <input id="uq-mnp-device" name="uqMnpDevice" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="uq-new-sim">UQ純新規 SIM単</label>
+              <input id="uq-new-sim" name="uqNewSim" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="uq-new-device">UQ純新規 端末付き</label>
+              <input id="uq-new-device" name="uqNewDevice" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="sellup">セルアップ</label>
+              <input id="sellup" name="sellup" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+          </div>
+
+          <h2 class="section-title">光回線</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="au-hikari-new">auひかり（新規）</label>
+              <input id="au-hikari-new" name="auHikariNew" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="au-hikari-d">auひかり（D光から）</label>
+              <input id="au-hikari-d" name="auHikariD" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="au-hikari-sb">auひかり（SB光から）</label>
+              <input id="au-hikari-sb" name="auHikariSb" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="au-hikari-other">auひかり（その他から）</label>
+              <input id="au-hikari-other" name="auHikariOther" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="bl-hikari-new">BLひかり（新規）</label>
+              <input id="bl-hikari-new" name="blHikariNew" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="bl-hikari-d">BLひかり（D光から）</label>
+              <input id="bl-hikari-d" name="blHikariD" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="bl-hikari-sb">BLひかり（SB光から）</label>
+              <input id="bl-hikari-sb" name="blHikariSb" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="bl-hikari-other">BLひかり（その他から）</label>
+              <input id="bl-hikari-other" name="blHikariOther" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="commufa-new">コミュファ光（新規）</label>
+              <input id="commufa-new" name="commufaNew" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="commufa-d">コミュファ光（D光から）</label>
+              <input id="commufa-d" name="commufaD" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="commufa-sb">コミュファ光（SB光から）</label>
+              <input id="commufa-sb" name="commufaSb" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="commufa-other">コミュファ光（その他から）</label>
+              <input id="commufa-other" name="commufaOther" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+          </div>
+
+          <h2 class="section-title">その他</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="au-denki">auでんき</label>
+              <input id="au-denki" name="auDenki" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="gold-card">ゴールドカード</label>
+              <input id="gold-card" name="goldCard" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="silver-card">シルバーカード</label>
+              <input id="silver-card" name="silverCard" type="number" min="0" step="1" inputmode="numeric" value="0" />
+            </div>
+            <div class="field">
+              <label for="last-check">最終日チェック</label>
+              <select id="last-check" name="lastCheck">
+                <option value="未設定">未設定</option>
+                <option value="対象外">対象外</option>
+                <option value="チェック済">チェック済</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="knowledge-tag">ナレッジタグ</label>
+              <input id="knowledge-tag" name="knowledgeTag" type="text" placeholder="例: 受付強化" />
+            </div>
+          </div>
+
           <div class="field">
             <label for="impressions">所感</label>
             <textarea id="impressions" name="impressions" placeholder="今日の所感を入力"></textarea>
           </div>
           <div class="field">
-            <label for="issues">課題</label>
-            <textarea id="issues" name="issues" placeholder="課題や改善点を入力"></textarea>
+            <label for="admin-comment">管理者コメント</label>
+            <textarea id="admin-comment" name="adminComment" class="admin-only" placeholder="管理者のみ入力可能" disabled></textarea>
+          </div>
+          <div class="field">
+            <label for="confirmation">確認フラグ</label>
+            <select id="confirmation" name="confirmation" class="admin-only" disabled>
+              <option value="未定">未定</option>
+              <option value="確認済み">確認済み</option>
+              <option value="差し戻し">差し戻し</option>
+            </select>
           </div>
           <div class="actions">
             <button type="submit">日報を保存</button>
@@ -172,8 +389,16 @@
       const form = document.getElementById("report-form");
       const entriesContainer = document.getElementById("entries");
       const clearButton = document.getElementById("clear");
+      const adminToggle = document.getElementById("admin-mode");
+      const adminFields = document.querySelectorAll(".admin-only");
 
       const storageKey = "dailyReports";
+
+      const setAdminMode = (enabled) => {
+        adminFields.forEach((field) => {
+          field.disabled = !enabled;
+        });
+      };
 
       const loadReports = () => {
         const saved = localStorage.getItem(storageKey);
@@ -209,14 +434,47 @@
             card.className = "entry";
 
             const title = document.createElement("h3");
-            title.textContent = `${report.date} ${report.name}`;
+            title.textContent = `${report.date} ${report.staffName}`;
 
             const details = document.createElement("dl");
             const fields = [
-              ["場所", report.location],
-              ["新規台数", `${report.newUnits} 台`],
+              ["メールアドレス", report.email],
+              ["担当者名", report.staffName],
+              ["実施店舗", report.store],
+              ["催事場所", report.eventLocation],
+              ["催事場の写真", report.photoName || "未添付"],
+              ["キャッチ数", report.catchCount],
+              ["着座数", report.seatCount],
+              ["見積件数", report.estimateCount],
+              ["auMNP SIM単", report.auMnpSim],
+              ["auMNP 端末付き", report.auMnpDevice],
+              ["au純新規 SIM単", report.auNewSim],
+              ["au純新規 端末付き", report.auNewDevice],
+              ["UQMNP SIM単", report.uqMnpSim],
+              ["UQMNP 端末付き", report.uqMnpDevice],
+              ["UQ純新規 SIM単", report.uqNewSim],
+              ["UQ純新規 端末付き", report.uqNewDevice],
+              ["セルアップ", report.sellup],
+              ["auひかり（新規）", report.auHikariNew],
+              ["auひかり（D光から）", report.auHikariD],
+              ["auひかり（SB光から）", report.auHikariSb],
+              ["auひかり（その他から）", report.auHikariOther],
+              ["BLひかり（新規）", report.blHikariNew],
+              ["BLひかり（D光から）", report.blHikariD],
+              ["BLひかり（SB光から）", report.blHikariSb],
+              ["BLひかり（その他から）", report.blHikariOther],
+              ["コミュファ光（新規）", report.commufaNew],
+              ["コミュファ光（D光から）", report.commufaD],
+              ["コミュファ光（SB光から）", report.commufaSb],
+              ["コミュファ光（その他から）", report.commufaOther],
+              ["auでんき", report.auDenki],
+              ["ゴールドカード", report.goldCard],
+              ["シルバーカード", report.silverCard],
+              ["最終日チェック", report.lastCheck],
+              ["ナレッジタグ", report.knowledgeTag || "-"],
               ["所感", report.impressions || "-"],
-              ["課題", report.issues || "-"],
+              ["管理者コメント", report.adminComment || "-"],
+              ["確認フラグ", report.confirmation || "未定"],
             ];
 
             fields.forEach(([label, value]) => {
@@ -235,20 +493,58 @@
       form.addEventListener("submit", (event) => {
         event.preventDefault();
         const formData = new FormData(form);
+        const photoFile = formData.get("photo");
         const report = {
           date: formData.get("date"),
-          location: formData.get("location"),
-          name: formData.get("name"),
-          newUnits: Number(formData.get("newUnits")),
+          email: formData.get("email"),
+          staffName: formData.get("staffName"),
+          store: formData.get("store"),
+          eventLocation: formData.get("eventLocation"),
+          photoName: photoFile instanceof File && photoFile.name ? photoFile.name : "",
+          catchCount: Number(formData.get("catchCount")),
+          seatCount: Number(formData.get("seatCount")),
+          estimateCount: Number(formData.get("estimateCount")),
+          auMnpSim: Number(formData.get("auMnpSim")),
+          auMnpDevice: Number(formData.get("auMnpDevice")),
+          auNewSim: Number(formData.get("auNewSim")),
+          auNewDevice: Number(formData.get("auNewDevice")),
+          uqMnpSim: Number(formData.get("uqMnpSim")),
+          uqMnpDevice: Number(formData.get("uqMnpDevice")),
+          uqNewSim: Number(formData.get("uqNewSim")),
+          uqNewDevice: Number(formData.get("uqNewDevice")),
+          sellup: Number(formData.get("sellup")),
+          auHikariNew: Number(formData.get("auHikariNew")),
+          auHikariD: Number(formData.get("auHikariD")),
+          auHikariSb: Number(formData.get("auHikariSb")),
+          auHikariOther: Number(formData.get("auHikariOther")),
+          blHikariNew: Number(formData.get("blHikariNew")),
+          blHikariD: Number(formData.get("blHikariD")),
+          blHikariSb: Number(formData.get("blHikariSb")),
+          blHikariOther: Number(formData.get("blHikariOther")),
+          commufaNew: Number(formData.get("commufaNew")),
+          commufaD: Number(formData.get("commufaD")),
+          commufaSb: Number(formData.get("commufaSb")),
+          commufaOther: Number(formData.get("commufaOther")),
+          auDenki: Number(formData.get("auDenki")),
+          goldCard: Number(formData.get("goldCard")),
+          silverCard: Number(formData.get("silverCard")),
+          lastCheck: formData.get("lastCheck"),
+          knowledgeTag: formData.get("knowledgeTag"),
           impressions: formData.get("impressions"),
-          issues: formData.get("issues"),
+          adminComment: formData.get("adminComment"),
+          confirmation: formData.get("confirmation"),
         };
 
         const reports = loadReports();
         reports.push(report);
         saveReports(reports);
         form.reset();
+        setAdminMode(false);
         renderReports();
+      });
+
+      adminToggle.addEventListener("change", () => {
+        setAdminMode(adminToggle.checked);
       });
 
       clearButton.addEventListener("click", () => {
@@ -258,6 +554,7 @@
         }
       });
 
+      setAdminMode(false);
       renderReports();
     </script>
   </body>
